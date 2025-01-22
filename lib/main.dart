@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/HomePage.dart';
-import 'package:flutter_application_1/MainPageWidget.dart';
+import 'screens/home_screen.dart';
  
 void main() {
   runApp(const MyApp());
@@ -13,8 +12,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
+      title: 'Emotion Journal', //アプリのタイトル
+      theme: ThemeData( //アプリ全体のテーマ設定
         // This is the theme of your application.
         //
         // TRY THIS: Try running your application with "flutter run". You'll see
@@ -33,10 +32,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      //画面遷移練習の場合
-      // home: HomePage(),
-      //ListViewの場合
-      home: MainPageWidget(),
+      home: HomeScreen(),
     );
   }
 }
