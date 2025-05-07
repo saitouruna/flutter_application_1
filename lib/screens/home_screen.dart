@@ -1,7 +1,8 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'emotion_record_screen.dart'; // EmotionRecordScreenのインポート
-import 'suggestion_screen.dart'; //SuggestionsScreenのインポート
+import 'suggestion_screen.dart';
+ //SuggestionsScreenのインポート
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -43,7 +44,8 @@ class HomeScreen extends StatelessWidget {
                 // ボタンが押された時にSuggestionsScreenへ遷移
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>  SuggestionScreen()),
+                MaterialPageRoute(builder: (context) => SuggestionsScreen()),
+
                 );
               },
               child: const Text('おすすめを見る'),

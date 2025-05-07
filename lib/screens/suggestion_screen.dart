@@ -1,7 +1,7 @@
-// lib/screens/suggestions_screen.dart
 import 'package:flutter/material.dart';
 
-class SuggestionScreen extends StatelessWidget {
+class SuggestionsScreen extends StatelessWidget {
+  const SuggestionsScreen({super.key});
 
   final List<Map<String, String>> suggestions = const [
     {'mood': '😊 嬉しい', 'suggestion': '友達にメッセージを送って共有しよう！'},
@@ -19,11 +19,9 @@ class SuggestionScreen extends StatelessWidget {
         title: const Text('あなたへのおすすめ'),
         backgroundColor: Colors.green,
       ),
-
       body: ListView.builder(
         itemCount: suggestions.length,
-        padding: const EdgeInsets.all(16),
-
+        padding: const EdgeInsets.all(16), // ← 修正ポイント
         itemBuilder: (context, index) {
           final item = suggestions[index];
           return Card(

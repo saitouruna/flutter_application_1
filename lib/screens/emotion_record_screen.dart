@@ -25,9 +25,9 @@ class EmotionRecordScreen extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         itemCount: emotions.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // 2列
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
+          crossAxisCount: 2, // 2列
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
         ),
         itemBuilder: (context, index) {
           final emotion = emotions[index];
