@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import 'emotion_record_screen.dart';
 import 'suggestion_screen.dart';
+import 'history_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -26,6 +27,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             const SectionTitle(title: '次のアクション'),
+            
             const SizedBox(height: 10),
             ActionButton(
               icon: Icons.edit,
@@ -48,29 +50,19 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
-            const SizedBox(height: 30),
-
-            const SectionTitle(title: '感情の履歴'),
             const SizedBox(height: 10),
-            if (emotionProvider.emotionRecords.isNotEmpty)
-              ...emotionProvider.emotionRecords.reversed.map((record) {
-                final timestamp = record['timestamp'] as DateTime;
-                final formattedTime = "${timestamp.year}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.day.toString().padLeft(2, '0')} "
-                    "${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}";
-                return Card(
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    leading: const Icon(Icons.history),
-                    title: Text(record['emotion']),
-                    subtitle: Text(formattedTime),
-                  ),
+            ActionButton(
+              icon: Icons.history,
+              label: '履歴を見る',
+              onPressed: (){
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const HistoryScreen()),
                 );
-              }).toList()
-            else
-              const Text(
-                '記録された感情はありません。',
-                style: TextStyle(color: Colors.grey),
-              ),
+              },
+            ),
+            
+
           ],
         ),
       ),
