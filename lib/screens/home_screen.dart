@@ -15,47 +15,21 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('感情ジャーナル'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              '今日の感情',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            const SectionTitle(title: '今日の感情'),
             const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.deepPurple.shade50,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: emotionProvider.selectedEmotion != null
-                  ? Row(
-                      children: [
-                        const Icon(Icons.emoji_emotions, size: 32),
-                        const SizedBox(width: 10),
-                        Text(
-                          emotionProvider.selectedEmotion!,
-                          style: const TextStyle(fontSize: 20),
-                        ),
-                      ],
-                    )
-                  : const Text(
-                      'まだ感情が記録されていません。',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
-                    ),
-            ),
+            EmotionCard(emotion: emotionProvider.selectedEmotion),
             const SizedBox(height: 30),
-            const Text(
-              '次のアクション',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+
+            const SectionTitle(title: '次のアクション'),
             const SizedBox(height: 10),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.edit),
-              label: const Text('感情を記録する'),
+            ActionButton(
+              icon: Icons.edit,
+              label: '感情を記録する',
               onPressed: () {
                 Navigator.push(
                   context,
@@ -64,9 +38,9 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 10),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.lightbulb),
-              label: const Text('気分に合った提案を見る'),
+            ActionButton(
+              icon: Icons.lightbulb,
+              label: '気分に合った提案を見る',
               onPressed: () {
                 Navigator.push(
                   context,
@@ -74,8 +48,101 @@ class HomeScreen extends StatelessWidget {
                 );
               },
             ),
+            const SizedBox(height: 30),
+
+            const SectionTitle(title: '感情の履歴'),
+            const SizedBox(height: 10),
+            if (emotionProvider.emotionRecords.isNotEmpty)
+              ...emotionProvider.emotionRecords.reversed.map((record) {
+                final timestamp = record['timestamp'] as DateTime;
+                final formattedTime = "${timestamp.year}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.day.toString().padLeft(2, '0')} "
+                    "${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}";
+                return Card(
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.history),
+                    title: Text(record['emotion']),
+                    subtitle: Text(formattedTime),
+                  ),
+                );
+              }).toList()
+            else
+              const Text(
+                '記録された感情はありません。',
+                style: TextStyle(color: Colors.grey),
+              ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class SectionTitle extends StatelessWidget {
+  final String title;
+  const SectionTitle({super.key, required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+    );
+  }
+}
+
+class EmotionCard extends StatelessWidget {
+  final String? emotion;
+  const EmotionCard({super.key, required this.emotion});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.deepPurple.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: emotion != null
+          ? Row(
+              children: [
+                const Icon(Icons.emoji_emotions, size: 32),
+                const SizedBox(width: 10),
+                Text(
+                  emotion!,
+                  style: const TextStyle(fontSize: 20),
+                ),
+              ],
+            )
+          : const Text(
+              'まだ感情が記録されていません。',
+              style: TextStyle(fontSize: 18, color: Colors.grey),
+            ),
+    );
+  }
+}
+
+class ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onPressed;
+
+  const ActionButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: Icon(icon),
+      label: Text(label),
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        minimumSize: const Size.fromHeight(48),
+        textStyle: const TextStyle(fontSize: 16),
       ),
     );
   }

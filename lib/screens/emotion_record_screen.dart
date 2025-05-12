@@ -43,7 +43,9 @@ class EmotionRecordScreen extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
-                      color: isSelected ? emotion['color'].withOpacity(0.8) : emotion['color'].withOpacity(0.3),
+                      color: isSelected
+                          ? emotion['color'].withOpacity(0.8)
+                          : emotion['color'].withOpacity(0.3),
                       borderRadius: BorderRadius.circular(16),
                       border: isSelected ? Border.all(color: Colors.black, width: 2) : null,
                     ),
@@ -69,10 +71,22 @@ class EmotionRecordScreen extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: emotionProvider.selectedEmotion != null
                   ? () {
+                      // 感情を記録
                       emotionProvider.recordEmotion();
+
+                      // 成功メッセージ
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('感情を記録しました')),
+                        const SnackBar(
+                          content: Text('感情を記録しました'),
+                          backgroundColor: Colors.teal,
+                        ),
                       );
+
+                      // 選択状態をリセット
+                      emotionProvider.selectEmotion(null);
+
+                      // 必要に応じて画面遷移（例：提案画面へ）
+                      // Navigator.pushNamed(context, '/suggestions');
                     }
                   : null,
               icon: const Icon(Icons.check),

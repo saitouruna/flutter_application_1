@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../models/emotion_entry.dart'; // モデルファイルのパスは適宜調整
+import '../services/emotion_db_service.dart'; // データベースサービス（仮）
 
 class EmotionProvider extends ChangeNotifier {
   String? _selectedEmotion;
@@ -7,13 +9,38 @@ class EmotionProvider extends ChangeNotifier {
   String? get selectedEmotion => _selectedEmotion;
   List<Map<String, dynamic>> get emotionRecords => List.unmodifiable(_emotionRecords);
 
+  // データベースから取得した履歴
+  List<EmotionEntry> _history = [];
+  List<EmotionEntry> get history => _history;
+
   // 感情を選択
-  void selectEmotion(String emotion) {
+  void selectEmotion(String? emotion) {
     _selectedEmotion = emotion;
     notifyListeners();
   }
 
-  // 感情を記録（日付と一緒に）
+  // メモ付きで感情を保存（データベースに）
+  Future<void> saveEmotionWithNote(String? note) async {
+    if (_selectedEmotion == null) return;
+
+    final now = DateTime.now();
+    final entry = EmotionEntry(
+      emotion: _selectedEmotion!,
+      note: note,
+      timestamp: now,
+    );
+
+    await EmotionDBService.insertEmotion(entry);
+    _emotionRecords.add({
+      'emotion': _selectedEmotion!,
+      'timestamp': now,
+    });
+
+    _history.insert(0, entry); // メモ付き履歴に追加
+    notifyListeners();
+  }
+
+  // 感情を記録（簡易な内部リストのみ）※既存処理
   void recordEmotion() {
     if (_selectedEmotion == null) return;
 
@@ -29,6 +56,12 @@ class EmotionProvider extends ChangeNotifier {
   // 記録をクリア（デバッグ用など）
   void clearRecords() {
     _emotionRecords.clear();
+    notifyListeners();
+  }
+
+  // データベースから履歴を取得
+  Future<void> loadHistory() async {
+    _history = await EmotionDBService.getAllEmotions();
     notifyListeners();
   }
 }
