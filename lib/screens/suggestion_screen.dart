@@ -1,37 +1,28 @@
 import 'package:flutter/material.dart';
+import '../models/suggestion.dart';
 
 class SuggestionsScreen extends StatelessWidget {
   const SuggestionsScreen({super.key});
 
-  final List<Map<String, String>> suggestions = const [
-    {'mood': '😊 嬉しい', 'suggestion': '友達にメッセージを送って共有しよう！'},
-    {'mood': '😢 悲しい', 'suggestion': '落ち着いた音楽を聴いてリラックスしましょう。'},
-    {'mood': '😠 怒り', 'suggestion': '深呼吸して少し散歩しよう。'},
-    {'mood': '😰 不安', 'suggestion': '短い瞑想を試してみよう。'},
-    {'mood': '😴 疲れた', 'suggestion': '10分間目を閉じて休憩しましょう。'},
-    {'mood': '😍 愛情', 'suggestion': '感謝の気持ちを誰かに伝えよう！'},
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final List<Suggestion> suggestions = [
+      Suggestion(text: '落ち着く音楽を聴いてみましょう 🎵'),
+      Suggestion(text: '外を少し散歩してみましょう 🚶‍♀️'),
+      Suggestion(text: '深呼吸して心を整えましょう 🌿'),
+    ];
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('あなたへのおすすめ'),
-        backgroundColor: Colors.green,
-      ),
+      appBar: AppBar(title: const Text('今日の提案')),
       body: ListView.builder(
+        padding: const EdgeInsets.all(16),
         itemCount: suggestions.length,
-        padding: const EdgeInsets.all(16), // ← 修正ポイント
         itemBuilder: (context, index) {
-          final item = suggestions[index];
           return Card(
-            color: Colors.primaries[index % Colors.primaries.length].shade200,
+            margin: const EdgeInsets.symmetric(vertical: 8),
             child: ListTile(
-              title: Text(
-                item['mood']!,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Text(item['suggestion']!),
+              leading: const Icon(Icons.tips_and_updates),
+              title: Text(suggestions[index].text),
             ),
           );
         },

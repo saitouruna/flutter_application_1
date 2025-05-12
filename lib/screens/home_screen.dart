@@ -1,8 +1,6 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'emotion_record_screen.dart'; // EmotionRecordScreenのインポート
+import 'emotion_record_screen.dart';
 import 'suggestion_screen.dart';
- //SuggestionsScreenのインポート
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -10,45 +8,31 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('感情ジャーナル'),
-	      backgroundColor: Colors.pinkAccent,
-      ),
+      appBar: AppBar(title: const Text('感情ジャーナル')),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ElevatedButton(
- 		          style: ElevatedButton.styleFrom(
-			          backgroundColor: Colors.orangeAccent,
-			          foregroundColor: Colors.white,
-            		padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-            	),
-
-		          onPressed: (){
-			          Navigator.push(
-				          context,
-				          MaterialPageRoute(builder: (context) =>  EmotionRecordScreen()),
-			          );
-		          },
-		          child: const Text('感情を記録する'),
-            ),
-            const SizedBox(height: 20), // ボタンの間隔を空ける
-            ElevatedButton(
-	          style: ElevatedButton.styleFrom(
-			        backgroundColor: Colors.teal,
-			        foregroundColor: Colors.white,
-			        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-	          ),
-            onPressed: () {
-                // ボタンが押された時にSuggestionsScreenへ遷移
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SuggestionsScreen()),
-
+            ElevatedButton.icon(
+              icon: const Icon(Icons.edit),
+              label: const Text('感情を記録する'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const EmotionRecordScreen()),
                 );
               },
-              child: const Text('おすすめを見る'),
+            ),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.lightbulb),
+              label: const Text('今日の提案を見る'),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SuggestionsScreen()),
+                );
+              },
             ),
           ],
         ),

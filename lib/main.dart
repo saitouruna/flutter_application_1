@@ -1,41 +1,61 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
- 
+
 void main() {
   runApp(const MyApp());
 }
- 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
- 
-  // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Emotion Journal', //アプリのタイトル
-      theme: ThemeData( //アプリ全体のテーマ設定
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      title: '感情ジャーナル',
+      theme: ThemeData(
         useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.pinkAccent,
+          brightness: Brightness.light,
+        ).copyWith(
+          primary: Colors.pinkAccent,
+          secondary: Colors.orangeAccent,
+          surface: Colors.white,
+        ),
+        scaffoldBackgroundColor: const Color(0xFFFDF5F7), // 背景色をやわらかく
+        textTheme: const TextTheme(
+          headlineMedium: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+          bodyMedium: TextStyle(
+            fontSize: 16,
+            color: Colors.black87,
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          foregroundColor: Colors.black87,
+          elevation: 1,
+          centerTitle: true,
+          titleTextStyle: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Colors.pinkAccent,
+          foregroundColor: Colors.white,
+        ),
       ),
-      home: HomeScreen(),
+      debugShowCheckedModeBanner: false,
+      home: const HomeScreen(),
     );
   }
 }
+
  
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
