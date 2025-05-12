@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
-import '../models/suggestion.dart';
+import 'package:provider/provider.dart';
+import '../providers/emotion_provider.dart';
+import '../services/emotion_analysis.dart';
 
 class SuggestionsScreen extends StatelessWidget {
   const SuggestionsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Suggestion> suggestions = [
-      Suggestion(text: '落ち着く音楽を聴いてみましょう 🎵'),
-      Suggestion(text: '外を少し散歩してみましょう 🚶‍♀️'),
-      Suggestion(text: '深呼吸して心を整えましょう 🌿'),
-    ];
+    final emotionProvider = Provider.of<EmotionProvider>(context);
+    final currentEmotion = emotionProvider.selectedEmotion ?? '未選択';
+    final suggestions = EmotionAnalysisService.getSuggestionsFromEmotion(currentEmotion);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('今日の提案')),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: suggestions.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: ListTile(
-              leading: const Icon(Icons.tips_and_updates),
-              title: Text(suggestions[index].text),
+      appBar: AppBar(
+        title: const Text('気分に合わせた提案'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '今の感情: $currentEmotion',
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          );
-        },
+            const SizedBox(height: 20),
+            const Text(
+              'おすすめの行動・アイデア：',
+              style: TextStyle(fontSize: 18),
+            ),
+            const SizedBox(height: 10),
+            ...suggestions.map((s) => Card(
+                  color: Colors.teal.shade50,
+                  child: ListTile(
+                    leading: const Icon(Icons.lightbulb),
+                    title: Text(s),
+                  ),
+                )),
+          ],
+        ),
       ),
     );
   }
