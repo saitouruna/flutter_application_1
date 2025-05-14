@@ -27,8 +27,8 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             const SectionTitle(title: '次のアクション'),
-            
             const SizedBox(height: 10),
+
             ActionButton(
               icon: Icons.edit,
               label: '感情を記録する',
@@ -40,6 +40,7 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 10),
+
             ActionButton(
               icon: Icons.lightbulb,
               label: '気分に合った提案を見る',
@@ -51,18 +52,17 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 10),
+
             ActionButton(
               icon: Icons.history,
               label: '履歴を見る',
-              onPressed: (){
+              onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const HistoryScreen()),
                 );
               },
             ),
-            
-
           ],
         ),
       ),
@@ -98,11 +98,11 @@ class EmotionCard extends StatelessWidget {
       child: emotion != null
           ? Row(
               children: [
-                const Icon(Icons.emoji_emotions, size: 32),
+                const Icon(Icons.emoji_emotions, size: 32, color: Colors.deepPurple),
                 const SizedBox(width: 10),
                 Text(
                   emotion!,
-                  style: const TextStyle(fontSize: 20),
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                 ),
               ],
             )

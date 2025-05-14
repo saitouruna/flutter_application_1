@@ -64,4 +64,31 @@ class EmotionProvider extends ChangeNotifier {
     _history = await EmotionDBService.getAllEmotions();
     notifyListeners();
   }
+
+  /// 日付ごとの感情出現数を集計して返す
+  Map<String, int> getEmotionCountByDate() {
+    final Map<String, int> counts = {};
+
+    for (var entry in _history) {
+      final date = entry.timestamp.toLocal().toString().split(' ')[0]; // yyyy-MM-dd
+      counts[date] = (counts[date] ?? 0) + 1;
+    }
+
+    return counts;
+  }
+
+  /// 感情ごとの出現回数を集計
+  Map<String, int> getEmotionTypeCounts() {
+    final Map<String, int> counts = {};
+
+    for (var entry in _history) {
+      final emotion = entry.emotion;
+      counts[emotion] = (counts[emotion] ?? 0) + 1;
+    }
+
+    return counts;
+  }
+
+  /// 最新の感情エントリを返す（なければ null）
+  EmotionEntry? get latestEmotion => _history.isNotEmpty ? _history.first : null;
 }
