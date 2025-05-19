@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
+import '../providers/theme_provider.dart';
 import 'emotion_record_screen.dart';
 import 'suggestion_screen.dart';
+import 'settings_screen.dart';
 import 'history_screen.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -11,27 +13,68 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final emotionProvider = Provider.of<EmotionProvider>(context);
+    final themeProvider = Provider.of<ThemeProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('感情ジャーナル'),
+        backgroundColor: themeProvider.primaryColor,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const SettingsScreen()),
+              );
+            },
+          ),
+        ],
       ),
-      body: SingleChildScrollView(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SectionTitle(title: '今日の感情'),
+            const Text(
+              '今日の感情',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
-            EmotionCard(emotion: emotionProvider.selectedEmotion),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: themeProvider.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: emotionProvider.selectedEmotion != null
+                  ? Row(
+                      children: [
+                        const Icon(Icons.emoji_emotions, size: 32),
+                        const SizedBox(width: 10),
+                        Text(
+                          emotionProvider.selectedEmotion!,
+                          style: const TextStyle(fontSize: 20),
+                        ),
+                      ],
+                    )
+                  : const Text(
+                      'まだ感情が記録されていません。',
+                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                    ),
+            ),
             const SizedBox(height: 30),
-
-            const SectionTitle(title: '次のアクション'),
+            const Text(
+              '次のアクション',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 10),
-
-            ActionButton(
-              icon: Icons.edit,
-              label: '感情を記録する',
+            ElevatedButton.icon(
+              icon: const Icon(Icons.edit),
+              label: const Text('感情を記録する'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: themeProvider.primaryColor,
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -40,10 +83,12 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 10),
-
-            ActionButton(
-              icon: Icons.lightbulb,
-              label: '気分に合った提案を見る',
+            ElevatedButton.icon(
+              icon: const Icon(Icons.lightbulb),
+              label: const Text('気分に合った提案を見る'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: themeProvider.primaryColor,
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -52,10 +97,12 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             const SizedBox(height: 10),
-
-            ActionButton(
-              icon: Icons.history,
-              label: '履歴を見る',
+            ElevatedButton.icon(
+              icon: const Icon(Icons.history),
+              label: const Text('記録履歴を見る'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: themeProvider.primaryColor,
+              ),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -69,75 +116,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-
-class SectionTitle extends StatelessWidget {
-  final String title;
-  const SectionTitle({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      title,
-      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-    );
-  }
-}
-
-class EmotionCard extends StatelessWidget {
-  final String? emotion;
-  const EmotionCard({super.key, required this.emotion});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.deepPurple.shade50,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: emotion != null
-          ? Row(
-              children: [
-                const Icon(Icons.emoji_emotions, size: 32, color: Colors.deepPurple),
-                const SizedBox(width: 10),
-                Text(
-                  emotion!,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-                ),
-              ],
-            )
-          : const Text(
-              'まだ感情が記録されていません。',
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-    );
-  }
-}
-
-class ActionButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onPressed;
-
-  const ActionButton({
-    super.key,
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      icon: Icon(icon),
-      label: Text(label),
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        minimumSize: const Size.fromHeight(48),
-        textStyle: const TextStyle(fontSize: 16),
-      ),
-    );
-  }
-}
-
-
