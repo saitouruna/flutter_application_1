@@ -7,8 +7,24 @@ import 'suggestion_screen.dart';
 import 'settings_screen.dart';
 import 'history_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final emotionProvider =
+          Provider.of<EmotionProvider>(context, listen: false);
+      emotionProvider.loadHistory(); // ここで async は OK（この関数内で async にする）
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +94,8 @@ class HomeScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const EmotionRecordScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const EmotionRecordScreen()),
                 );
               },
             ),

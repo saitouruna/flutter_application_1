@@ -20,7 +20,7 @@ class EmotionDBService {
         return db.execute(
           '''
           CREATE TABLE emotions(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY,
             emotion TEXT,
             note TEXT,
             timestamp TEXT

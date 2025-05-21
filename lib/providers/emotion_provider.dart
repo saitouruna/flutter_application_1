@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/emotion_entry.dart'; // モデルファイルのパスは適宜調整
-import '../services/emotion_db_service.dart'; // データベースサービス（仮）
+import '../services/emotion_db_service.dart'; // データベースサービス
 
 class EmotionProvider extends ChangeNotifier {
   String? _selectedEmotion;
