@@ -76,14 +76,11 @@ class EmotionRecordScreen extends StatelessWidget {
 
                       // 成功メッセージ
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('感情を記録しました'),
-                          backgroundColor: Colors.teal,
-                        ),
+                        const SnackBar(content: Text('記録しました')),
                       );
 
-                      // 選択状態をリセット
-                      emotionProvider.selectEmotion(null);
+                      // ホーム画面に戻る
+                      Navigator.pop(context);
 
                       // 必要に応じて画面遷移（例：提案画面へ）
                       // Navigator.pushNamed(context, '/suggestions');
