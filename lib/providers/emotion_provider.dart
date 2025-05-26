@@ -7,11 +7,16 @@ class EmotionProvider extends ChangeNotifier {
   final List<Map<String, dynamic>> _emotionRecords = [];
 
   String? get selectedEmotion => _selectedEmotion;
-  List<Map<String, dynamic>> get emotionRecords => List.unmodifiable(_emotionRecords);
+  List<Map<String, dynamic>> get emotionRecords =>
+      List.unmodifiable(_emotionRecords);
 
   // データベースから取得した履歴
   List<EmotionEntry> _history = [];
   List<EmotionEntry> get history => _history;
+
+  EmotionProvider() {
+    loadHistory();
+  }
 
   // 感情を選択
   void selectEmotion(String? emotion) {
@@ -70,7 +75,8 @@ class EmotionProvider extends ChangeNotifier {
     final Map<String, int> counts = {};
 
     for (var entry in _history) {
-      final date = entry.timestamp.toLocal().toString().split(' ')[0]; // yyyy-MM-dd
+      final date =
+          entry.timestamp.toLocal().toString().split(' ')[0]; // yyyy-MM-dd
       counts[date] = (counts[date] ?? 0) + 1;
     }
 
@@ -90,5 +96,24 @@ class EmotionProvider extends ChangeNotifier {
   }
 
   /// 最新の感情エントリを返す（なければ null）
-  EmotionEntry? get latestEmotion => _history.isNotEmpty ? _history.first : null;
+  EmotionEntry? get latestEmotion =>
+      _history.isNotEmpty ? _history.first : null;
+
+  //日付ごとの記録された感情一覧
+  Map<DateTime, List<String>> get emotionEvents {
+    final Map<DateTime, List<String>> events = {};
+
+    for (var record in _emotionRecords) {
+      final date = DateTime(record['timestamp'].year, record['timestamp'].month,
+          record['timestamp'].day);
+
+      if (events.containsKey(date)) {
+        events[date]!.add(record['emotion']);
+      } else {
+        events[date] = [record['emotion']];
+      }
+    }
+
+    return events;
+  }
 }
