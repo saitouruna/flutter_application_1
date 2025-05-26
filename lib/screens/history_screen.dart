@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
+import '../models/emotion_entry.dart'; // EmotionEntry のモデルを使う
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -8,7 +9,7 @@ class HistoryScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final emotionProvider = Provider.of<EmotionProvider>(context);
-    final records = emotionProvider.emotionRecords.reversed.toList();
+    final List<EmotionEntry> records = emotionProvider.history.reversed.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -21,16 +22,14 @@ class HistoryScreen extends StatelessWidget {
                 itemCount: records.length,
                 itemBuilder: (context, index) {
                   final record = records[index];
-                  final emotion = record['emotion'];
-                  final timestamp = record['timestamp'] as DateTime;
                   final formattedTime =
-                      '${timestamp.year}/${timestamp.month.toString().padLeft(2, '0')}/${timestamp.day.toString().padLeft(2, '0')} '
-                      '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}';
+                      '${record.timestamp.year}/${record.timestamp.month.toString().padLeft(2, '0')}/${record.timestamp.day.toString().padLeft(2, '0')} '
+                      '${record.timestamp.hour.toString().padLeft(2, '0')}:${record.timestamp.minute.toString().padLeft(2, '0')}';
 
                   return Card(
                     child: ListTile(
                       leading: const Icon(Icons.emoji_emotions),
-                      title: Text(emotion),
+                      title: Text(record.emotion),
                       subtitle: Text(formattedTime),
                     ),
                   );

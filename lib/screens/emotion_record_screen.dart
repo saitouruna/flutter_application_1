@@ -35,19 +35,23 @@ class EmotionRecordScreen extends StatelessWidget {
               spacing: 12,
               runSpacing: 12,
               children: emotions.map((emotion) {
-                final isSelected = emotion['label'] == emotionProvider.selectedEmotion;
+                final isSelected =
+                    emotion['label'] == emotionProvider.selectedEmotion;
                 return GestureDetector(
                   onTap: () {
                     emotionProvider.selectEmotion(emotion['label']);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? emotion['color'].withOpacity(0.8)
                           : emotion['color'].withOpacity(0.3),
                       borderRadius: BorderRadius.circular(16),
-                      border: isSelected ? Border.all(color: Colors.black, width: 2) : null,
+                      border: isSelected
+                          ? Border.all(color: Colors.black, width: 2)
+                          : null,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
@@ -70,9 +74,9 @@ class EmotionRecordScreen extends StatelessWidget {
             const Spacer(),
             ElevatedButton.icon(
               onPressed: emotionProvider.selectedEmotion != null
-                  ? () {
-                      // 感情を記録
-                      emotionProvider.recordEmotion();
+                  ? () async {
+                      // 感情をHiveに保存（メモは今回は省略）
+                      await emotionProvider.saveEmotionWithNote(null);
 
                       // 成功メッセージ
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -81,15 +85,13 @@ class EmotionRecordScreen extends StatelessWidget {
 
                       // ホーム画面に戻る
                       Navigator.pop(context);
-
-                      // 必要に応じて画面遷移（例：提案画面へ）
-                      // Navigator.pushNamed(context, '/suggestions');
                     }
                   : null,
               icon: const Icon(Icons.check),
               label: const Text('記録する'),
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 textStyle: const TextStyle(fontSize: 18),
               ),
             ),
