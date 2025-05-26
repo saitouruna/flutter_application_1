@@ -74,17 +74,23 @@ class EmotionRecordScreen extends StatelessWidget {
             const Spacer(),
             ElevatedButton.icon(
               onPressed: emotionProvider.selectedEmotion != null
-                  ? () async {
-                      // 感情をHiveに保存（メモは今回は省略）
-                      await emotionProvider.saveEmotionWithNote(null);
+                  ? () {
+                      final selectedEmotion = emotionProvider.selectedEmotion;
 
-                      // 成功メッセージ
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('記録しました')),
-                      );
-
-                      // ホーム画面に戻る
+                      // 先にNavigator.pop(context)などを行う
                       Navigator.pop(context);
+
+                      // 非同期処理を後で
+                      Future(() async {
+                        await emotionProvider.saveEmotionWithNote(null);
+
+                        // Snackbar表示は context がまだ有効な場合にのみ
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('感情を記録しました')),
+                          );
+                        }
+                      });
                     }
                   : null,
               icon: const Icon(Icons.check),

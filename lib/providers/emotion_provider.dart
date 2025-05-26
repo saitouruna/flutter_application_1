@@ -103,15 +103,14 @@ class EmotionProvider extends ChangeNotifier {
   Map<DateTime, List<String>> get emotionEvents {
     final Map<DateTime, List<String>> events = {};
 
-    for (var record in _emotionRecords) {
-      final date = DateTime(record['timestamp'].year, record['timestamp'].month,
-          record['timestamp'].day);
+    for (var entry in _history) {
+      final date = DateTime(
+          entry.timestamp.year, entry.timestamp.month, entry.timestamp.day);
 
-      if (events.containsKey(date)) {
-        events[date]!.add(record['emotion']);
-      } else {
-        events[date] = [record['emotion']];
+      if (!events.containsKey(date)) {
+        events[date] = [];
       }
+      events[date]!.add(entry.emotion);
     }
 
     return events;
