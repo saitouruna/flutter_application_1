@@ -87,13 +87,13 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
 
             const SizedBox(height: 24),
 
-            /// 📝 日記（自由記述）欄
+            /// 📝 日記テキストフィールド
             TextField(
               controller: _noteController,
               maxLines: 5,
               decoration: InputDecoration(
-                labelText: '今日の出来事や感じたことを記録',
-                hintText: '例: 友達と話して気分が晴れた',
+                labelText: '今日のことや心に残ったことを書いてみましょう',
+                hintText: '例：公園を散歩して気持ちが落ち着いた',
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
