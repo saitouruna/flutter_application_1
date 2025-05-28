@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
-import '../models/emotion_entry.dart'; // EmotionEntry のモデルを使う
+import '../models/emotion_entry.dart';
 
 class HistoryScreen extends StatelessWidget {
   const HistoryScreen({super.key});
@@ -27,10 +27,40 @@ class HistoryScreen extends StatelessWidget {
                       '${record.timestamp.hour.toString().padLeft(2, '0')}:${record.timestamp.minute.toString().padLeft(2, '0')}';
 
                   return Card(
-                    child: ListTile(
-                      leading: const Icon(Icons.emoji_emotions),
-                      title: Text(record.emotion),
-                      subtitle: Text(formattedTime),
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.emoji_emotions, color: Colors.deepPurple),
+                              const SizedBox(width: 8),
+                              Text(
+                                record.emotion,
+                                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            formattedTime,
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                          if (record.note != null && record.note!.trim().isNotEmpty) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              record.note!,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   );
                 },

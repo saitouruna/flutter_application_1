@@ -14,9 +14,7 @@ class EmotionProvider extends ChangeNotifier {
   List<EmotionEntry> _history = [];
   List<EmotionEntry> get history => _history;
 
-  EmotionProvider() {
-    loadHistory();
-  }
+  EmotionProvider();
 
   // 感情を選択
   void selectEmotion(String? emotion) {
