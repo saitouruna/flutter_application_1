@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 
-class EmotionRecordScreen extends StatelessWidget {
+class EmotionRecordScreen extends StatefulWidget {
   const EmotionRecordScreen({super.key});
+
+  @override
+  State<EmotionRecordScreen> createState() => _EmotionRecordScreenState();
+}
+
+class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
+  final TextEditingController _noteController = TextEditingController();
 
   final List<Map<String, dynamic>> emotions = const [
     {'emoji': '😊', 'label': '嬉しい', 'color': Colors.orange},
@@ -13,6 +20,12 @@ class EmotionRecordScreen extends StatelessWidget {
     {'emoji': '😴', 'label': '疲れた', 'color': Colors.grey},
     {'emoji': '😎', 'label': '元気', 'color': Colors.green},
   ];
+
+  @override
+  void dispose() {
+    _noteController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,26 +84,55 @@ class EmotionRecordScreen extends StatelessWidget {
                 );
               }).toList(),
             ),
+
+            const SizedBox(height: 24),
+
+            /// 📝 日記（自由記述）欄
+            TextField(
+              controller: _noteController,
+              maxLines: 5,
+              decoration: InputDecoration(
+                labelText: '今日の出来事や感じたことを記録',
+                hintText: '例: 友達と話して気分が晴れた',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+
             const Spacer(),
+
+            /// ✅ 記録ボタン
             ElevatedButton.icon(
               onPressed: emotionProvider.selectedEmotion != null
-                  ? () {
-                      final selectedEmotion = emotionProvider.selectedEmotion;
+                  ? () async {
+                      final note = _noteController.text.trim();
+                      await emotionProvider
+                          .saveEmotionWithNote(note.isEmpty ? null : note);
 
-                      // 先にNavigator.pop(context)などを行う
-                      Navigator.pop(context);
+                      if (!mounted) return;
 
-                      // 非同期処理を後で
-                      Future(() async {
-                        await emotionProvider.saveEmotionWithNote(null);
+                      // 確認ダイアログを表示
+                      await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('記録完了'),
+                          content: const Text('感情を記録しました。'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(); // ダイアログを閉じる
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
 
-                        // Snackbar表示は context がまだ有効な場合にのみ
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('感情を記録しました')),
-                          );
-                        }
-                      });
+                      // ホームに戻る
+                      if (mounted) {
+                        Navigator.pop(context);
+                      }
                     }
                   : null,
               icon: const Icon(Icons.check),

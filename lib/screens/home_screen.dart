@@ -57,7 +57,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 🔶 上部に目立たせたボタン
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
