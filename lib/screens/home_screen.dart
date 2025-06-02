@@ -84,8 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              
               const SizedBox(height: 10),
               TableCalendar(
                 firstDay: DateTime.utc(2020, 1, 1),
@@ -121,7 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 30),
               const Text(
                 '次のアクション',
@@ -141,10 +138,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
-                icon: const Icon(Icons.settings),
-                label: const Text('設定'),
+                icon: const Icon(Icons.history), 
+                label: const Text('過去の記録'), 
                 onPressed: () {
-                  Navigator.pushNamed(context, '/settings');
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) => const HistoryScreen()),
+                  );
                 },
               ),
             ],
