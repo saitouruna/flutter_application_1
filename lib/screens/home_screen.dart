@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
+
 import '../providers/emotion_provider.dart';
 import '../providers/theme_provider.dart';
 import 'emotion_record_screen.dart';
 import 'suggestion_screen.dart';
 import 'settings_screen.dart';
 import 'history_screen.dart';
+import 'daily_records_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -84,7 +86,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 24),
-              const SizedBox(height: 10),
               TableCalendar(
                 firstDay: DateTime.utc(2020, 1, 1),
                 lastDay: DateTime.utc(2030, 12, 31),
@@ -95,6 +96,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     _selectedDay = selectedDay;
                     _focusedDay = focusedDay;
                   });
+
+                  final date = DateTime(
+                      selectedDay.year, selectedDay.month, selectedDay.day);
+                  final events = emotionEvents[date];
+
+                  if (events != null && events.isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            DailyRecordsScreen(selectedDate: selectedDay),
+                      ),
+                    );
+                  }
                 },
                 eventLoader: (day) {
                   final date = DateTime(day.year, day.month, day.day);
@@ -138,13 +153,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
-                icon: const Icon(Icons.history), 
-                label: const Text('過去の記録'), 
+                icon: const Icon(Icons.history),
+                label: const Text('過去の記録'),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (_) => const HistoryScreen()),
+                    MaterialPageRoute(builder: (_) => const HistoryScreen()),
                   );
                 },
               ),
