@@ -97,19 +97,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     _focusedDay = focusedDay;
                   });
 
-                  final date = DateTime(
-                      selectedDay.year, selectedDay.month, selectedDay.day);
-                  final events = emotionEvents[date];
-
-                  if (events != null && events.isNotEmpty) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            DailyRecordsScreen(selectedDate: selectedDay),
-                      ),
-                    );
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DailyRecordsScreen(selectedDate: selectedDay),
+                    ),
+                  );
                 },
                 eventLoader: (day) {
                   final date = DateTime(day.year, day.month, day.day);

@@ -3,7 +3,9 @@ import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 
 class EmotionRecordScreen extends StatefulWidget {
-  const EmotionRecordScreen({super.key});
+  final DateTime? initialDate;
+
+  const EmotionRecordScreen({super.key, this.initialDate});
 
   @override
   State<EmotionRecordScreen> createState() => _EmotionRecordScreenState();
@@ -33,7 +35,7 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('今日の感情を記録'),
+        title: const Text('感情を記録'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -84,10 +86,7 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                 );
               }).toList(),
             ),
-
             const SizedBox(height: 24),
-
-            /// 📝 日記テキストフィールド
             TextField(
               controller: _noteController,
               maxLines: 5,
@@ -99,20 +98,18 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                 ),
               ),
             ),
-
             const Spacer(),
-
-            /// ✅ 記録ボタン
             ElevatedButton.icon(
               onPressed: emotionProvider.selectedEmotion != null
                   ? () async {
                       final note = _noteController.text.trim();
-                      await emotionProvider
-                          .saveEmotionWithNote(note.isEmpty ? null : note);
+                      await emotionProvider.saveEmotionWithNote(
+                        note.isEmpty ? null : note,
+                        timestamp: widget.initialDate,
+                      );
 
                       if (!mounted) return;
 
-                      // 確認ダイアログを表示
                       await showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -121,7 +118,7 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                           actions: [
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context).pop(); // ダイアログを閉じる
+                                Navigator.of(context).pop();
                               },
                               child: const Text('OK'),
                             ),
@@ -129,7 +126,6 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                         ),
                       );
 
-                      // ホームに戻る
                       if (mounted) {
                         Navigator.pop(context);
                       }

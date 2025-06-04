@@ -14,13 +14,13 @@ class EmotionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveEmotionWithNote(String? note) async {
+  Future<void> saveEmotionWithNote(String? note, {DateTime? timestamp}) async {
     if (_selectedEmotion == null) return;
 
     final entry = EmotionEntry(
       emotion: _selectedEmotion!,
       note: note,
-      timestamp: DateTime.now(),
+      timestamp: timestamp ?? DateTime.now(),
     );
 
     await EmotionDbService.insertEmotion(entry);
@@ -39,12 +39,12 @@ class EmotionProvider with ChangeNotifier {
     await loadHistory();
   }
 
-  /// 🔥 ここを追加：日付ごとに感情をまとめた Map を返す
   Map<DateTime, List<EmotionEntry>> get emotionEvents {
     final Map<DateTime, List<EmotionEntry>> events = {};
 
     for (var entry in _history) {
-      final date = DateTime(entry.timestamp.year, entry.timestamp.month, entry.timestamp.day);
+      final date = DateTime(
+          entry.timestamp.year, entry.timestamp.month, entry.timestamp.day);
       events.putIfAbsent(date, () => []).add(entry);
     }
 
