@@ -14,18 +14,23 @@ class EmotionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> saveEmotionWithNote(String? note, {DateTime? timestamp}) async {
+  Future<void> saveEmotionWithNote(String? note, {DateTime? date}) async {
     if (_selectedEmotion == null) return;
 
     final entry = EmotionEntry(
       emotion: _selectedEmotion!,
       note: note,
-      timestamp: timestamp ?? DateTime.now(),
+      timestamp: date ?? DateTime.now(),
     );
 
     await EmotionDbService.insertEmotion(entry);
     _selectedEmotion = null;
 
+    await loadHistory();
+  }
+
+  Future<void> updateEmotion(EmotionEntry entry) async {
+    await EmotionDbService.updateEmotion(entry);
     await loadHistory();
   }
 
@@ -43,8 +48,7 @@ class EmotionProvider with ChangeNotifier {
     final Map<DateTime, List<EmotionEntry>> events = {};
 
     for (var entry in _history) {
-      final date = DateTime(
-          entry.timestamp.year, entry.timestamp.month, entry.timestamp.day);
+      final date = DateTime(entry.timestamp.year, entry.timestamp.month, entry.timestamp.day);
       events.putIfAbsent(date, () => []).add(entry);
     }
 

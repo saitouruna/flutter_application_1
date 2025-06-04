@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/emotion_entry.dart';
 import '../providers/emotion_provider.dart';
 
 class EmotionRecordScreen extends StatefulWidget {
   final DateTime? initialDate;
+  final EmotionEntry? initialEntry;
 
-  const EmotionRecordScreen({super.key, this.initialDate});
+  const EmotionRecordScreen({super.key, this.initialDate, this.initialEntry});
 
   @override
   State<EmotionRecordScreen> createState() => _EmotionRecordScreenState();
@@ -24,6 +26,17 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    if (widget.initialEntry != null) {
+      final entry = widget.initialEntry!;
+      final emotionProvider = Provider.of<EmotionProvider>(context, listen: false);
+      emotionProvider.selectEmotion(entry.emotion);
+      _noteController.text = entry.note ?? '';
+    }
+  }
+
+  @override
   void dispose() {
     _noteController.dispose();
     super.dispose();
@@ -35,7 +48,7 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('感情を記録'),
+        title: Text(widget.initialEntry != null ? '記録を編集' : '今日の感情を記録'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -86,7 +99,10 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                 );
               }).toList(),
             ),
+
             const SizedBox(height: 24),
+
+            /// 📝 日記テキストフィールド
             TextField(
               controller: _noteController,
               maxLines: 5,
@@ -98,44 +114,33 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                 ),
               ),
             ),
+
             const Spacer(),
+
+            /// ✅ 記録ボタン
             ElevatedButton.icon(
               onPressed: emotionProvider.selectedEmotion != null
                   ? () async {
                       final note = _noteController.text.trim();
-                      await emotionProvider.saveEmotionWithNote(
-                        note.isEmpty ? null : note,
-                        timestamp: widget.initialDate,
-                      );
+                      final date = widget.initialEntry?.timestamp ?? widget.initialDate ?? DateTime.now();
 
-                      if (!mounted) return;
-
-                      await showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('記録完了'),
-                          content: const Text('感情を記録しました。'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('OK'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (mounted) {
-                        Navigator.pop(context);
+                      if (widget.initialEntry != null) {
+                        final updatedEntry = widget.initialEntry!.copyWith(
+                          emotion: emotionProvider.selectedEmotion!,
+                          note: note.isEmpty ? null : note,
+                        );
+                        await emotionProvider.updateEmotion(updatedEntry);
+                      } else {
+                        await emotionProvider.saveEmotionWithNote(note.isEmpty ? null : note, date: date);
                       }
+
+                      if (mounted) Navigator.pop(context);
                     }
                   : null,
               icon: const Icon(Icons.check),
               label: const Text('記録する'),
               style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 textStyle: const TextStyle(fontSize: 18),
               ),
             ),

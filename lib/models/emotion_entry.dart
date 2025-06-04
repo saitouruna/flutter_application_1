@@ -28,4 +28,19 @@ class EmotionEntry {
       timestamp: DateTime.parse(map['timestamp']),
     );
   }
+
+  /// ✅ これを追加
+  EmotionEntry copyWith({
+    int? id,
+    String? emotion,
+    String? note,
+    DateTime? timestamp,
+  }) {
+    return EmotionEntry(
+      id: id ?? this.id,
+      emotion: emotion ?? this.emotion,
+      note: note ?? this.note,
+      timestamp: timestamp ?? this.timestamp,
+    );
+  }
 }

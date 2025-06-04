@@ -46,4 +46,14 @@ class EmotionDbService {
     final db = await database;
     await db.delete('emotions');
   }
+
+  static Future<void> updateEmotion(EmotionEntry entry) async {
+    final db = await database;
+    await db.update(
+      'emotions',
+      entry.toMap(),
+      where: 'id = ?',
+      whereArgs: [entry.id],
+    );
+  }
 }
