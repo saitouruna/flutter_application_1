@@ -135,18 +135,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 10),
               ElevatedButton.icon(
-                icon: const Icon(Icons.lightbulb),
-                label: const Text('気分に合った提案を見る'),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => const SuggestionsScreen()),
-                  );
-                },
-              ),
-              const SizedBox(height: 10),
-              ElevatedButton.icon(
                 icon: const Icon(Icons.history),
                 label: const Text('過去の記録'),
                 onPressed: () {
