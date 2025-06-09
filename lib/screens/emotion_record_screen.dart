@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../models/emotion_entry.dart';
 import '../providers/emotion_provider.dart';
+import '../models/emotion_entry.dart';
 
 class EmotionRecordScreen extends StatefulWidget {
   final DateTime? initialDate;
   final EmotionEntry? initialEntry;
 
-  const EmotionRecordScreen({super.key, this.initialDate, this.initialEntry});
+  const EmotionRecordScreen({
+    super.key,
+    this.initialDate,
+    this.initialEntry,
+  });
 
   @override
   State<EmotionRecordScreen> createState() => _EmotionRecordScreenState();
@@ -25,14 +29,14 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
     {'emoji': '😎', 'label': '元気', 'color': Colors.green},
   ];
 
+  String? _selectedEmotion;
+
   @override
   void initState() {
     super.initState();
     if (widget.initialEntry != null) {
-      final entry = widget.initialEntry!;
-      final emotionProvider = Provider.of<EmotionProvider>(context, listen: false);
-      emotionProvider.selectEmotion(entry.emotion);
-      _noteController.text = entry.note ?? '';
+      _selectedEmotion = widget.initialEntry!.emotion;
+      _noteController.text = widget.initialEntry!.note ?? '';
     }
   }
 
@@ -45,17 +49,18 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
   @override
   Widget build(BuildContext context) {
     final emotionProvider = Provider.of<EmotionProvider>(context);
+    final isEdit = widget.initialEntry != null;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.initialEntry != null ? '記録を編集' : '今日の感情を記録'),
+        title: Text(isEdit ? '記録の編集' : '感情を記録'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             const Text(
-              '今の気分を選んでください',
+              '気分を選んでください',
               style: TextStyle(fontSize: 20),
             ),
             const SizedBox(height: 20),
@@ -63,15 +68,15 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
               spacing: 12,
               runSpacing: 12,
               children: emotions.map((emotion) {
-                final isSelected =
-                    emotion['label'] == emotionProvider.selectedEmotion;
+                final isSelected = emotion['label'] == _selectedEmotion;
                 return GestureDetector(
                   onTap: () {
-                    emotionProvider.selectEmotion(emotion['label']);
+                    setState(() {
+                      _selectedEmotion = emotion['label'];
+                    });
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? emotion['color'].withOpacity(0.8)
@@ -84,15 +89,9 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          emotion['emoji'],
-                          style: const TextStyle(fontSize: 28),
-                        ),
+                        Text(emotion['emoji'], style: const TextStyle(fontSize: 28)),
                         const SizedBox(height: 4),
-                        Text(
-                          emotion['label'],
-                          style: const TextStyle(fontSize: 14),
-                        ),
+                        Text(emotion['label'], style: const TextStyle(fontSize: 14)),
                       ],
                     ),
                   ),
@@ -102,7 +101,6 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
 
             const SizedBox(height: 24),
 
-            /// 📝 日記テキストフィールド
             TextField(
               controller: _noteController,
               maxLines: 5,
@@ -117,28 +115,83 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
 
             const Spacer(),
 
-            /// ✅ 記録ボタン
+            if (isEdit)
+              ElevatedButton.icon(
+                onPressed: () async {
+                  final confirm = await showDialog<bool>(
+                    context: context,
+                    builder: (_) => AlertDialog(
+                      title: const Text('削除の確認'),
+                      content: const Text('この記録を削除してもよろしいですか？'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('キャンセル'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('削除する', style: TextStyle(color: Colors.red)),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true && widget.initialEntry != null) {
+                    await emotionProvider.deleteEmotion(widget.initialEntry!);
+                    if (context.mounted) Navigator.pop(context);
+                  }
+                },
+                icon: const Icon(Icons.delete),
+                label: const Text('削除する'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 18),
+                ),
+              ),
+
+            const SizedBox(height: 12),
+
             ElevatedButton.icon(
-              onPressed: emotionProvider.selectedEmotion != null
+              onPressed: _selectedEmotion != null
                   ? () async {
                       final note = _noteController.text.trim();
-                      final date = widget.initialEntry?.timestamp ?? widget.initialDate ?? DateTime.now();
 
-                      if (widget.initialEntry != null) {
-                        final updatedEntry = widget.initialEntry!.copyWith(
-                          emotion: emotionProvider.selectedEmotion!,
+                      if (isEdit && widget.initialEntry != null) {
+                        final updated = widget.initialEntry!.copyWith(
+                          emotion: _selectedEmotion!,
                           note: note.isEmpty ? null : note,
                         );
-                        await emotionProvider.updateEmotion(updatedEntry);
+                        await emotionProvider.updateEmotion(updated);
                       } else {
-                        await emotionProvider.saveEmotionWithNote(note.isEmpty ? null : note, date: date);
+                        final newEntry = EmotionEntry(
+                          emotion: _selectedEmotion!,
+                          note: note.isEmpty ? null : note,
+                          timestamp: widget.initialDate ?? DateTime.now(),
+                        );
+                        await emotionProvider.addEmotion(newEntry);
                       }
 
+                      if (!mounted) return;
+                      await showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('完了'),
+                          content: Text(isEdit ? '記録を更新しました。' : '感情を記録しました。'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
                       if (mounted) Navigator.pop(context);
                     }
                   : null,
               icon: const Icon(Icons.check),
-              label: const Text('記録する'),
+              label: Text(isEdit ? '更新する' : '記録する'),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 textStyle: const TextStyle(fontSize: 18),

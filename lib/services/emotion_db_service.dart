@@ -36,6 +36,16 @@ class EmotionDbService {
     return await db.insert('emotions', entry.toMap());
   }
 
+  static Future<int> updateEmotion(EmotionEntry entry) async {
+    final db = await database;
+    return await db.update(
+      'emotions',
+      entry.toMap(),
+      where: 'id = ?',
+      whereArgs: [entry.id],
+    );
+  }
+
   static Future<List<EmotionEntry>> getAllEmotions() async {
     final db = await database;
     final maps = await db.query('emotions', orderBy: 'timestamp DESC');
@@ -47,13 +57,28 @@ class EmotionDbService {
     await db.delete('emotions');
   }
 
-  static Future<void> updateEmotion(EmotionEntry entry) async {
+  static Future<EmotionEntry?> getEmotionById(int id) async {
     final db = await database;
-    await db.update(
+    final maps = await db.query(
       'emotions',
-      entry.toMap(),
       where: 'id = ?',
-      whereArgs: [entry.id],
+      whereArgs: [id],
+      limit: 1,
     );
+
+    if (maps.isNotEmpty) {
+      return EmotionEntry.fromMap(maps.first);
+    } else {
+      return null;
+    }
   }
+
+  static Future<void> deleteEmotion(int id) async {
+  final db = await database;
+  await db.delete(
+    'emotions',
+    where: 'id = ?',
+    whereArgs: [id],
+  );
+}
 }
