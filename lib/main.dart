@@ -38,6 +38,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Emotion Journal',
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: themeProvider.primaryColor),
