@@ -29,7 +29,10 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
     {'emoji': '😎', 'label': '元気', 'color': Colors.green},
   ];
 
+  final List<String> _tags = ['学校', '仕事', '趣味', '生活', 'その他'];
+
   String? _selectedEmotion;
+  String? _selectedTag;
 
   @override
   void initState() {
@@ -37,6 +40,7 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
     if (widget.initialEntry != null) {
       _selectedEmotion = widget.initialEntry!.emotion;
       _noteController.text = widget.initialEntry!.note ?? '';
+      _selectedTag = widget.initialEntry!.tag;
     }
   }
 
@@ -95,6 +99,31 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                       ],
                     ),
                   ),
+                );
+              }).toList(),
+            ),
+
+            const SizedBox(height: 24),
+
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text('タグを選んでください（任意）', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _tags.map((tag) {
+                final selected = _selectedTag == tag;
+                return ChoiceChip(
+                  label: Text(tag),
+                  selected: selected,
+                  selectedColor: Colors.deepPurple.shade300,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      _selectedTag = selected ? tag : null;
+                    });
+                  },
                 );
               }).toList(),
             ),
@@ -162,12 +191,14 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
                         final updated = widget.initialEntry!.copyWith(
                           emotion: _selectedEmotion!,
                           note: note.isEmpty ? null : note,
+                          tag: _selectedTag,
                         );
                         await emotionProvider.updateEmotion(updated);
                       } else {
                         final newEntry = EmotionEntry(
                           emotion: _selectedEmotion!,
                           note: note.isEmpty ? null : note,
+                          tag: _selectedTag,
                           timestamp: widget.initialDate ?? DateTime.now(),
                         );
                         await emotionProvider.addEmotion(newEntry);

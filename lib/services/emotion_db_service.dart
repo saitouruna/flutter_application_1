@@ -24,7 +24,8 @@ class EmotionDbService {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             emotion TEXT NOT NULL,
             note TEXT,
-            timestamp TEXT NOT NULL
+            timestamp TEXT NOT NULL,
+            tag TEXT
           )
         ''');
       },
