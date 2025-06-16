@@ -17,7 +17,7 @@ class EmotionDbService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2, // ✅ バージョンを 2 にアップデート
       onCreate: (db, version) async {
         await db.execute('''
           CREATE TABLE emotions (
@@ -25,9 +25,15 @@ class EmotionDbService {
             emotion TEXT NOT NULL,
             note TEXT,
             timestamp TEXT NOT NULL,
-            tag TEXT
+            tag TEXT  -- ✅ 新しいカラムを含める
           )
         ''');
+      },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          // ✅ バージョン1から2へのマイグレーション
+          await db.execute('ALTER TABLE emotions ADD COLUMN tag TEXT');
+        }
       },
     );
   }
@@ -75,11 +81,11 @@ class EmotionDbService {
   }
 
   static Future<void> deleteEmotion(int id) async {
-  final db = await database;
-  await db.delete(
-    'emotions',
-    where: 'id = ?',
-    whereArgs: [id],
-  );
-}
+    final db = await database;
+    await db.delete(
+      'emotions',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
