@@ -2,27 +2,127 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/emotion_provider.dart';
 import '../models/emotion_entry.dart';
-import 'emotion_record_screen.dart'; // ← 追加：編集画面を使うため
+import 'emotion_record_screen.dart';
 
-class HistoryScreen extends StatelessWidget {
+class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
+
+  @override
+  State<HistoryScreen> createState() => _HistoryScreenState();
+}
+
+class _HistoryScreenState extends State<HistoryScreen> {
+  String? _selectedEmotion;
+  String? _selectedTag;
+
+  final List<String> _emotionOptions = [
+    'すべて',
+    '嬉しい',
+    '悲しい',
+    '怒り',
+    '不安',
+    '疲れた',
+    '元気',
+  ];
+
+  final List<String> _tagOptions = [
+    'すべて',
+    '学校',
+    '仕事',
+    '趣味',
+    '生活',
+    'その他',
+  ];
+
+  void _resetFilters() {
+    setState(() {
+      _selectedEmotion = null;
+      _selectedTag = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final emotionProvider = Provider.of<EmotionProvider>(context);
     final List<EmotionEntry> records = emotionProvider.history.reversed.toList();
 
+    final filteredRecords = records.where((record) {
+      final matchEmotion =
+          _selectedEmotion == null || record.emotion == _selectedEmotion;
+      final matchTag = _selectedTag == null || record.tag == _selectedTag;
+      return matchEmotion && matchTag;
+    }).toList();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('感情の履歴'),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(60),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            child: Row(
+              children: [
+                // 感情ドロップダウン
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedEmotion ?? 'すべて',
+                    items: _emotionOptions.map((emotion) {
+                      return DropdownMenuItem<String>(
+                        value: emotion,
+                        child: Text(emotion),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == 'すべて') {
+                          _selectedEmotion = null;
+                        } else if (_selectedEmotion == value) {
+                          _selectedEmotion = null;
+                        } else {
+                          _selectedEmotion = value;
+                        }
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // タグドロップダウン
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _selectedTag ?? 'すべて',
+                    items: _tagOptions.map((tag) {
+                      return DropdownMenuItem<String>(
+                        value: tag,
+                        child: Text(tag),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        if (value == 'すべて') {
+                          _selectedTag = null;
+                        } else if (_selectedTag == value) {
+                          _selectedTag = null;
+                        } else {
+                          _selectedTag = value;
+                        }
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: records.isNotEmpty
+        child: filteredRecords.isNotEmpty
             ? ListView.builder(
-                itemCount: records.length,
+                itemCount: filteredRecords.length,
                 itemBuilder: (context, index) {
-                  final record = records[index];
+                  final record = filteredRecords[index];
                   final formattedTime =
                       '${record.timestamp.year}/${record.timestamp.month.toString().padLeft(2, '0')}/${record.timestamp.day.toString().padLeft(2, '0')} '
                       '${record.timestamp.hour.toString().padLeft(2, '0')}:${record.timestamp.minute.toString().padLeft(2, '0')}';
@@ -64,6 +164,13 @@ class HistoryScreen extends StatelessWidget {
                               formattedTime,
                               style: const TextStyle(color: Colors.grey),
                             ),
+                            if (record.tag != null && record.tag!.trim().isNotEmpty) ...[
+                              const SizedBox(height: 4),
+                              Text(
+                                'タグ: ${record.tag!}',
+                                style: const TextStyle(color: Colors.blueGrey),
+                              ),
+                            ],
                             if (record.note != null && record.note!.trim().isNotEmpty) ...[
                               const SizedBox(height: 8),
                               Text(
@@ -80,7 +187,7 @@ class HistoryScreen extends StatelessWidget {
               )
             : const Center(
                 child: Text(
-                  'まだ感情の記録がありません。',
+                  '該当する記録がありません。',
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ),
