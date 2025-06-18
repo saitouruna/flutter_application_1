@@ -19,7 +19,8 @@ class DailyRecordsScreen extends StatelessWidget {
           entry.timestamp.day == selectedDate.day;
     }).toList();
 
-    final formattedDate = '${selectedDate.year}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.day.toString().padLeft(2, '0')}';
+    final formattedDate =
+        '${selectedDate.year}/${selectedDate.month.toString().padLeft(2, '0')}/${selectedDate.day.toString().padLeft(2, '0')}';
 
     return Scaffold(
       appBar: AppBar(
@@ -29,11 +30,22 @@ class DailyRecordsScreen extends StatelessWidget {
             padding: const EdgeInsets.only(right: 16.0),
             child: GestureDetector(
               onTap: () {
-                // 新規追加
+                final now = DateTime.now();
+                final initialDateTime = DateTime(
+                  selectedDate.year,
+                  selectedDate.month,
+                  selectedDate.day,
+                  now.hour,
+                  now.minute,
+                  now.second,
+                );
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => EmotionRecordScreen(initialDate: selectedDate),
+                    builder: (context) => EmotionRecordScreen(
+                      initialDate: initialDateTime,
+                    ),
                   ),
                 );
               },
@@ -56,7 +68,8 @@ class DailyRecordsScreen extends StatelessWidget {
                 itemCount: dailyRecords.length,
                 itemBuilder: (context, index) {
                   final record = dailyRecords[index];
-                  final time = '${record.timestamp.hour.toString().padLeft(2, '0')}:${record.timestamp.minute.toString().padLeft(2, '0')}';
+                  final time =
+                      '${record.timestamp.hour.toString().padLeft(2, '0')}:${record.timestamp.minute.toString().padLeft(2, '0')}';
 
                   return GestureDetector(
                     onTap: () {
@@ -84,11 +97,14 @@ class DailyRecordsScreen extends StatelessWidget {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.emoji_emotions, color: Colors.deepPurple),
+                                const Icon(Icons.emoji_emotions,
+                                    color: Colors.deepPurple),
                                 const SizedBox(width: 8),
                                 Text(
                                   record.emotion,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
                               ],
                             ),
@@ -97,7 +113,8 @@ class DailyRecordsScreen extends StatelessWidget {
                               time,
                               style: const TextStyle(color: Colors.grey),
                             ),
-                            if (record.note != null && record.note!.trim().isNotEmpty) ...[
+                            if (record.note != null &&
+                                record.note!.trim().isNotEmpty) ...[
                               const SizedBox(height: 8),
                               Text(
                                 record.note!,
