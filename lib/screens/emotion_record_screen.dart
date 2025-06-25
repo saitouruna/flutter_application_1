@@ -29,7 +29,8 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
     {'emoji': '😎', 'label': '元気', 'color': Colors.green},
   ];
 
-  final List<String> _tags = ['学校', '仕事', '趣味', '生活', 'その他'];
+  final List<String> _defaultTags = ['学校', '仕事', '趣味', '生活', 'その他'];
+  final List<String> _tags = [];
 
   String? _selectedEmotion;
   String? _selectedTag;
@@ -37,10 +38,14 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
   @override
   void initState() {
     super.initState();
+    _tags.addAll(_defaultTags);
     if (widget.initialEntry != null) {
       _selectedEmotion = widget.initialEntry!.emotion;
       _noteController.text = widget.initialEntry!.note ?? '';
       _selectedTag = widget.initialEntry!.tag;
+      if (_selectedTag != null && !_tags.contains(_selectedTag)) {
+        _tags.add(_selectedTag!);
+      }
     }
   }
 
@@ -107,25 +112,71 @@ class _EmotionRecordScreenState extends State<EmotionRecordScreen> {
 
             const Align(
               alignment: Alignment.centerLeft,
-              child: Text('タグを選んでください（任意）', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child: Text(
+                'タグを選んでください（任意）',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
             ),
             const SizedBox(height: 8),
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: _tags.map((tag) {
-                final selected = _selectedTag == tag;
-                return ChoiceChip(
-                  label: Text(tag),
-                  selected: selected,
-                  selectedColor: Colors.deepPurple.shade300,
-                  onSelected: (bool selected) {
-                    setState(() {
-                      _selectedTag = selected ? tag : null;
-                    });
+              children: [
+                ..._tags.map((tag) {
+                  final selected = _selectedTag == tag;
+                  return ChoiceChip(
+                    label: Text(tag),
+                    selected: selected,
+                    selectedColor: Colors.deepPurple.shade300,
+                    onSelected: (bool selected) {
+                      setState(() {
+                        _selectedTag = selected ? tag : null;
+                      });
+                    },
+                  );
+                }),
+                // カスタムタグを作るボタン
+                ActionChip(
+                  label: const Text('+ 新しいタグ'),
+                  onPressed: () async {
+                    final newTag = await showDialog<String>(
+                      context: context,
+                      builder: (context) {
+                        String input = '';
+                        return AlertDialog(
+                          title: const Text('新しいタグを作成'),
+                          content: TextField(
+                            autofocus: true,
+                            onChanged: (value) => input = value.trim(),
+                            decoration: const InputDecoration(hintText: 'タグ名'),
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('キャンセル'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                if (input.isNotEmpty) {
+                                  Navigator.pop(context, input);
+                                }
+                              },
+                              child: const Text('追加'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (newTag != null && newTag.isNotEmpty && !_tags.contains(newTag)) {
+                      setState(() {
+                        _tags.add(newTag);
+                        _selectedTag = newTag;
+                      });
+                    }
                   },
-                );
-              }).toList(),
+                ),
+              ],
             ),
 
             const SizedBox(height: 24),
